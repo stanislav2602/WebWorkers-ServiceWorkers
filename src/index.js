@@ -1,11 +1,8 @@
 import './styles.css';
 
-const MOCK_NEWS = [
-    { title: 'Дэдпул 3 собрал миллиард долларов за выходные', date: '2024-01-28' },
-    { title: 'Новый трейлер "Дюны 2" побил рекорды просмотров', date: '2024-01-27' },
-    { title: 'Оскар 2024: полный список номинантов', date: '2024-01-26' },
-    { title: 'Кристофер Нолан снимет фильм про вампиров', date: '2024-01-25' }
-];
+const API_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://ваш-сервер.cyclic.app/api/news'
+    : 'http://localhost:3000/api/news';
 
 const loadingDiv = document.getElementById('loading');
 const errorDiv = document.getElementById('error');
@@ -42,24 +39,15 @@ function showNews(data) {
 
 async function fetchNews() {
     showLoading();
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const shouldFail = Math.random() < 0.1;
-    
-    if (shouldFail) {
-        showError();
-        return;
-    }
     
     try {
-        const cache = await caches.open('news-v1');
-        await cache.put('/api/news', new Response(JSON.stringify(MOCK_NEWS)));
-    } catch (e) {
-        console.log('Cache save failed');
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error();
+        const data = await response.json();
+        showNews(data);
+    } catch (err) {
+        showError();
     }
-    
-    showNews(MOCK_NEWS);
 }
 
 if ('serviceWorker' in navigator) {
@@ -67,5 +55,4 @@ if ('serviceWorker' in navigator) {
 }
 
 refreshBtn.addEventListener('click', fetchNews);
-
 fetchNews();
