@@ -54,7 +54,14 @@ async function fetchNews() {
 }
 
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
+    const isGitHubPages = window.location.hostname === 'stanislav2602.github.io';
+    const swPath = isGitHubPages ? '/WebWorkers-ServiceWorkers/sw.js' : '/sw.js';
+    
+    navigator.serviceWorker.register(swPath).then(reg => {
+        console.log('Service Worker registered:', reg);
+    }).catch(err => {
+        console.log('Service Worker registration failed:', err);
+    });
 }
 
 refreshBtn.addEventListener('click', fetchNews);

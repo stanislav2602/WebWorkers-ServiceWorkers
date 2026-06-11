@@ -37,12 +37,17 @@ module.exports = {
             skipWaiting: true,
             runtimeCaching: [
                 {
-                    urlPattern: /\/api\/news/,
+                    urlPattern: ({ url }) => {
+                        return url.pathname.includes('/api/news') || 
+                               url.pathname.endsWith('.html') ||
+                               url.pathname.endsWith('.js') ||
+                               url.pathname.endsWith('.css');
+                    },
                     handler: 'NetworkFirst',
                     options: {
-                        cacheName: 'news-cache',
+                        cacheName: 'static-cache',
                         expiration: {
-                            maxEntries: 10,
+                            maxEntries: 50,
                             maxAgeSeconds: 86400
                         }
                     }
